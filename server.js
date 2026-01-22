@@ -10,25 +10,18 @@ const port = 3000;
 
 
 const allowedOrigins = [
-  'http://tokisocialhub.ct.ws', 
-  'http://newkhnatok.ct.ws',
-  'http://tokliveshop.ct.ws',
-  'http://tokervipsocial.kesug.com',
-  'http://tookershop.ct.ws',
-  'localhost:3000'
+  'tokisocialhub.ct.ws', 
+  'newkhnatok.ct.ws',
+  'tokliveshop.ct.ws',
+  'tokervipsocial.kesug.com',
+  'tookershop.ct.ws'
 ];
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 app.use(cors({
-  origin: function (origin, callback) {
-    // Agar origin list mein he ya phir request server-side se he (!origin)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS Please Contact Developer: whatsapp: +447958266774'));
-    }
-  }
+  origin: '*', // Is se client ko server ka bheja hua error message mil jaye ga
+  methods: ['GET']
 }));
 
 app.get('/', (req, res) => { 
@@ -155,20 +148,24 @@ async function getTikTokData(username) {
 }
 
 const protectAPI = (req, res, next) => {
-  // Browser batata he ke request kis site se aa rahi he (Origin)
   const origin = req.get('origin') || req.get('referer');
 
   if (!origin) {
-    return res.status(403).json({ error: "Direct access Denied. Please Contact Developer: whatsapp: +447958266774" });
+    return res.status(403).json({ 
+      status: "error",
+      message: "Direct access Denied. Please Contact Developer: whatsapp: +447958266774" 
+    });
   }
 
-  // Check karna ke kya request karne wali site hamari list mein he?
   const isAllowed = allowedOrigins.some(domain => origin.includes(domain));
 
   if (isAllowed) {
-    next(); // Agar domain list mein he to scraper chalne do
+    next();
   } else {
-    return res.status(403).json({ error: "Access Denied: Domine Not Registered, Please Contact Developer: whatsapp: +447958266774" });
+    return res.status(403).json({ 
+      status: "error",
+      message: `Access Denied: Domain not registered. Please Contact Developer: whatsapp: +447958266774` 
+    });
   }
 };
 

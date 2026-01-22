@@ -148,6 +148,7 @@ const protectAPI = (req, res, next) => {
 
   // Check karna ke domain list mein he?
   const isAllowed = allowedOrigins.some(domain => {
+    // Domain se http:// hata kar check karein agar list mein sirf name hain
     const cleanDomain = domain.replace(/^https?:\/\//, '');
     return origin.includes(cleanDomain);
   });
@@ -155,23 +156,12 @@ const protectAPI = (req, res, next) => {
   if (isAllowed) {
     next();
   } else {
-    return res.status(403).json({
+    // Ye 100% Valid JSON Response he
+    return res.status(403).json({ 
       status: "error",
-      message: "Access Denied: Domain not registered. Please Contact Developer: whatsapp: +447958266774"
+      message: "Access Denied: Domain not registered. Please Contact Developer: whatsapp: +447958266774" 
     });
   }
-};
-
-const isAllowed = allowedOrigins.some(domain => origin.includes(domain));
-
-if (isAllowed) {
-  next();
-} else {
-  return res.status(403).json({
-    status: "error",
-    message: `Access Denied: Domain not registered. Please Contact Developer: whatsapp: +447958266774`
-  });
-}
 };
 
 // Express endpoints

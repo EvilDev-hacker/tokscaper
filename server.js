@@ -177,7 +177,7 @@ const protectAPI = (req, res, next) => {
 };
 
 // Express endpoints
-app.get('/api/tiktok/:username', protectAPI, async (req, res) => {
+app.get('/api/tiktok/:username', async (req, res) => {
   try {
     const data = await getTikTokData(req.params.username);
 

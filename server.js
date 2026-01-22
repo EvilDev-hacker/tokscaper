@@ -10,7 +10,7 @@ const port = 3000;
 
 
 const allowedOrigins = [
-  'tokisocialhub.ct.ws', 
+  'tokisocialhub.ct.ws',
   'newkhnatok.ct.ws',
   'tokliveshop.ct.ws',
   'tokervipsocial.kesug.com',
@@ -19,28 +19,24 @@ const allowedOrigins = [
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
-app.use(cors({
-  origin: '*', // Is se client ko server ka bheja hua error message mil jaye ga
-  methods: ['GET']
-}));
-
-app.get('/', (req, res) => { 
-  res.sendFile(path.join(__dirname, 'index.html')); 
-}); 
+app.use(cors());
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 async function getTikTokData(username) {
-  
+
   const browser = await puppeteer.launch({
-  args: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--single-process',
-    '--no-zygote',
-  ],
-  executablePath: process.env.NODE_ENV === 'production' ?  process.env.PUPPETEER_EXECUTABLE_PATH
-  : puppeteer.executablePath(),
-  
-});
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--single-process',
+      '--no-zygote',
+    ],
+    executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH
+      : puppeteer.executablePath(),
+
+  });
 
   try {
     const page = await browser.newPage();
@@ -73,7 +69,7 @@ async function getTikTokData(username) {
             verified: userData?.verified || false
           };
           console.log(user);
-          
+
           stats = {
             followers: userStats?.followerCount?.toLocaleString() || '0',
             following: userStats?.followingCount?.toLocaleString() || '0',
@@ -93,7 +89,7 @@ async function getTikTokData(username) {
               createTime: v.createTime
             }));
         }
-      } catch (err) {}
+      } catch (err) { }
       return { user, stats, videos };
     });
 
@@ -148,25 +144,34 @@ async function getTikTokData(username) {
 }
 
 const protectAPI = (req, res, next) => {
-  const origin = req.get('origin') || req.get('referer');
+  const origin = req.get('origin') || req.get('referer') || "";
 
-  if (!origin) {
-    return res.status(403).json({ 
-      status: "error",
-      message: "Direct access Denied. Please Contact Developer: whatsapp: +447958266774" 
-    });
-  }
-
-  const isAllowed = allowedOrigins.some(domain => origin.includes(domain));
+  // Check karna ke domain list mein he?
+  const isAllowed = allowedOrigins.some(domain => {
+    const cleanDomain = domain.replace(/^https?:\/\//, '');
+    return origin.includes(cleanDomain);
+  });
 
   if (isAllowed) {
     next();
   } else {
-    return res.status(403).json({ 
+    return res.status(403).json({
       status: "error",
-      message: `Access Denied: Domain not registered. Please Contact Developer: whatsapp: +447958266774` 
+      message: "Access Denied: Domain not registered. Please Contact Developer: whatsapp: +447958266774"
     });
   }
+};
+
+const isAllowed = allowedOrigins.some(domain => origin.includes(domain));
+
+if (isAllowed) {
+  next();
+} else {
+  return res.status(403).json({
+    status: "error",
+    message: `Access Denied: Domain not registered. Please Contact Developer: whatsapp: +447958266774`
+  });
+}
 };
 
 // Express endpoints

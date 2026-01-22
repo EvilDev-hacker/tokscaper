@@ -27,16 +27,28 @@ app.get('/', (req, res) => {
 async function getTikTokData(username) {
 
   const browser = await puppeteer.launch({
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--single-process',
-      '--no-zygote',
-    ],
-    executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH
-      : puppeteer.executablePath(),
+  // executablePath wali line ko comment kar den ya hata den
+  // executablePath: '/usr/bin/google-chrome-stable', 
 
-  });
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--single-process'
+  ],
+});
+
+  // const browser = await puppeteer.launch({
+  //   args: [
+  //     '--no-sandbox',
+  //     '--disable-setuid-sandbox',
+  //     '--single-process',
+  //     '--no-zygote',
+  //   ],
+  //   executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH
+  //     : puppeteer.executablePath(),
+
+  // });
 
   try {
     const page = await browser.newPage();

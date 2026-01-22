@@ -59,7 +59,7 @@ const browser = await puppeteer.launch({
 
     await page.goto(`https://www.tiktok.com/@${username}`, {
       waitUntil: 'networkidle2',
-      timeout: 30000
+      timeout: 60000
     });
 
     // Try SIGI_STATE first (VIP fast method)

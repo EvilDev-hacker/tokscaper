@@ -26,16 +26,17 @@ app.get('/', (req, res) => {
 
 async function getTikTokData(username) {
 
-  const browser = await puppeteer.launch({
-  // executablePath wali line ko comment kar den ya hata den
-  // executablePath: '/usr/bin/google-chrome-stable', 
 
+// Launch settings
+const browser = await puppeteer.launch({
   args: [
     '--no-sandbox',
     '--disable-setuid-sandbox',
     '--disable-dev-shm-usage',
     '--single-process'
   ],
+  // Ye line Puppeteer ko sahi folder mein bhejegi
+  executablePath: path.join(__dirname, '.puppeteer_cache', 'chrome', 'linux-141.0.7390.78', 'chrome-linux64', 'chrome'), 
 });
 
   // const browser = await puppeteer.launch({

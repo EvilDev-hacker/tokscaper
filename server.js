@@ -14,7 +14,8 @@ const allowedOrigins = [
   'newkhnatok.ct.ws',
   'tokliveshop.ct.ws',
   'tokervipsocial.kesug.com',
-  'tookershop.ct.ws'
+  'tookershop.ct.ws',
+  'mostheavytokiapp.ct.ws' 
 ];
 
 app.use(express.json());
@@ -26,30 +27,17 @@ app.get('/', (req, res) => {
 
 async function getTikTokData(username) {
 
+  const browser = await puppeteer.launch({
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--single-process',
+      '--no-zygote',
+    ],
+    executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH
+      : puppeteer.executablePath(),
 
-// Launch settings
-const browser = await puppeteer.launch({
-  args: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--single-process'
-  ],
-  // Ye line Puppeteer ko sahi folder mein bhejegi
-  executablePath: path.join(__dirname, '.puppeteer_cache', 'chrome', 'linux-141.0.7390.78', 'chrome-linux64', 'chrome'), 
-});
-
-  // const browser = await puppeteer.launch({
-  //   args: [
-  //     '--no-sandbox',
-  //     '--disable-setuid-sandbox',
-  //     '--single-process',
-  //     '--no-zygote',
-  //   ],
-  //   executablePath: process.env.NODE_ENV === 'production' ? process.env.PUPPETEER_EXECUTABLE_PATH
-  //     : puppeteer.executablePath(),
-
-  // });
+  });
 
   try {
     const page = await browser.newPage();
@@ -59,7 +47,7 @@ const browser = await puppeteer.launch({
 
     await page.goto(`https://www.tiktok.com/@${username}`, {
       waitUntil: 'networkidle2',
-      timeout: 60000
+      timeout: 30000
     });
 
     // Try SIGI_STATE first (VIP fast method)
@@ -178,7 +166,7 @@ const protectAPI = (req, res, next) => {
 };
 
 // Express endpoints
-app.get('/api/tiktok/:username', async (req, res) => {
+app.get('/api/tiktok/:username', protectAPI, async (req, res) => {
   try {
     const data = await getTikTokData(req.params.username);
 

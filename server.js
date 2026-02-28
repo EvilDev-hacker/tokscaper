@@ -15,7 +15,8 @@ const allowedOrigins = [
   'tokliveshop.ct.ws',
   'tokervipsocial.kesug.com',
   'tookershop.ct.ws',
-  'mostheavytokiapp.ct.ws' 
+  'mostheavytokiapp.ct.ws',
+  'mostvipcoiinsshop.wuaze.com'
 ];
 
 app.use(express.json());
